@@ -1,6 +1,5 @@
 from django.contrib import admin
-
-from .models import Customer, Investment, Stock
+from .models import Customer, Asset, Misc
 
 # Register your models here.
 class CustomerList(admin.ModelAdmin):
@@ -9,22 +8,22 @@ class CustomerList(admin.ModelAdmin):
     search_fields = ('cust_number', 'name')
     ordering = ['cust_number']
 
-class InvestmentList(admin.ModelAdmin):
-    list_display = ('customer', 'category', 'description', 'recent_value')
+class AssetList(admin.ModelAdmin):
+    list_display = ('customer', 'category', 'description', 'value')
     list_filter = ('customer', 'category')
     search_fields = ('customer', 'category')
     ordering = ['customer']
 
-class StockList(admin.ModelAdmin):
-    list_display = ('customer','symbol', 'name', 'shares', 'purchase_price')
-    list_filter = ('customer','symbol', 'name')
-    search_fields = ('customer','symbol', 'name')
+class MiscList(admin.ModelAdmin):
+    list_display = ('customer', 'name', 'value')
+    list_filter = ('customer', 'name')
+    search_fields = ('customer', 'name')
     ordering = ['customer']
 
 
 admin.site.register(Customer, CustomerList)
-admin.site.register(Investment, InvestmentList)
-admin.site.register(Stock, StockList)
+admin.site.register(Asset, AssetList)
+admin.site.register(Misc, MiscList)
 
 
 

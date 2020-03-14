@@ -1,17 +1,17 @@
 from django import forms
-from .models import Customer, Stock, Investment
+from .models import Customer, Misc, Asset
 
 class CustomerForm(forms.ModelForm):
     class Meta:
         model = Customer
         fields = ('cust_number', 'name', 'address', 'city', 'state', 'zipcode', 'email', 'cell_phone',)
 
-class StockForm(forms.ModelForm):
+class MiscForm(forms.ModelForm):
    class Meta:
-       model = Stock
-       fields = ('customer', 'symbol', 'name', 'shares', 'purchase_price', 'purchase_date',)
+       model = Misc
+       fields = ('customer', 'make', 'model', 'name', 'value', 'category', 'description', 'date',)
 
-class InvestmentForm(forms.ModelForm):
+class AssetForm(forms.ModelForm):
    class Meta:
-       model = Investment
-       fields = ('customer', 'category', 'description', 'acquired_value', 'acquired_date', 'recent_value', 'recent_date',)
+       model = Asset
+       fields = ('customer', 'make', 'model', 'serial_number', 'category', 'description', 'value', 'date',)

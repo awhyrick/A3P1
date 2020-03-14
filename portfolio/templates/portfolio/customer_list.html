@@ -70,8 +70,8 @@
             <ul class="nav navbar-nav">
                 <li><a href="{% url 'portfolio:home' %}">Home</a></li>
                 <li><a href="{% url 'portfolio:customer_list' %}">Customers</a></li>
-               <li><a href="{% url 'portfolio:investment_list' %}">Investments</a></li>
-                <li><a href="{% url 'portfolio:stock_list' %}">Stocks</a></li>
+               <li><a href="{% url 'portfolio:asset_list' %}">Assets</a></li>
+                <li><a href="{% url 'portfolio:misc_list' %}">Miscellaneous</a></li>
 
             </ul>
             <ul class="nav navbar-nav navbar-right">
@@ -146,8 +146,7 @@
                     </td>
 
                     </td>
-                    <td><a href="{% url 'portfolio:portfolio' pk=customer.pk %}"
-                           class="btn btn-primary">Portfolio</a>
+
                 </tr>
             {% endfor %}
             </tbody>

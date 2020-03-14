@@ -29,58 +29,48 @@ class Customer(models.Model):
         return str(self.cust_number)
 
 
-class Investment(models.Model):
-    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='investment')
+class Asset(models.Model):
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='assets')
+    make = models.CharField(max_length=50)
+    model = models.CharField(max_length=50)
+    serial_number = models.CharField(max_length=50)
     category = models.CharField(max_length=50)
     description = models.CharField(max_length=200)
-    acquired_value = models.DecimalField(max_digits=10, decimal_places=2)
-    acquired_date = models.DateField(default=timezone.now)
-    recent_value = models.DecimalField(max_digits=10, decimal_places=2)
-    recent_date = models.DateField(default=timezone.now, blank=True, null=True)
+    value = models.DecimalField(max_digits=10, decimal_places=2)
+    date = models.DateField(default=timezone.now)
+    created_date = models.DateTimeField(
+        default=timezone.now)
 
     def created(self):
-        self.acquired_date = timezone.now()
+        self.date = timezone.now()
         self.save()
 
     def updated(self):
-        self.recent_date = timezone.now()
+        self.date = timezone.now()
         self.save()
 
     def __str__(self):
         return str(self.customer)
 
-    def results_by_investment(self):
-        return self.recent_value - self.acquired_value
-
-class Stock(models.Model):
-    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='stocks')
-    symbol = models.CharField(max_length=10)
+class Misc(models.Model):
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='miscs')
+    make = models.CharField(max_length=50)
+    model = models.CharField(max_length=50)
     name = models.CharField(max_length=50)
-    shares = models.DecimalField (max_digits=10, decimal_places=1)
-    purchase_price = models.DecimalField(max_digits=10, decimal_places=2)
-    purchase_date = models.DateField(default=timezone.now, blank=True, null=True)
+    value = models.DecimalField(max_digits=10, decimal_places=2)
+    category = models.CharField(max_length=50)
+    description = models.CharField(max_length=200)
+    date = models.DateField(default=timezone.now)
+    created_date = models.DateTimeField(
+        default=timezone.now)
 
     def created(self):
-        self.recent_date = timezone.now()
+        self.created_date = timezone.now()
         self.save()
 
     def __str__(self):
         return str(self.customer)
 
-    def initial_stock_value(self):
-        return self.shares * self.purchase_price
 
-    def current_stock_price(self):
-        symbol_f = str(self.symbol)
-        main_api = 'https://www.alphavantage.co/query?function=BATCH_STOCK_QUOTES&symbols='
-        api_key = '&apikey=FE009PFG0NL5N40W'
-        url = main_api + symbol_f + api_key
-        json_data = requests.get(url).json()
-        open_price = float(json_data["Stock Quotes"][0]["2. price"])
-        share_value = open_price
-        return share_value
-
-    def current_stock_value(self):
-        return float(self.current_stock_price()) * float(self.shares)
 
 

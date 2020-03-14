@@ -11,7 +11,6 @@ from rest_framework import status
 from .serializers import CustomerSerializer
 
 
-
 # Create your views here.
 now = timezone.now()
 def home(request):
@@ -49,119 +48,91 @@ def customer_delete(request, pk):
    return redirect('portfolio:customer_list')
 
 @login_required
-def stock_list(request):
-   stocks = Stock.objects.filter(purchase_date__lte=timezone.now())
-   return render(request, 'portfolio/stock_list.html', {'stocks': stocks})
+def misc_list(request):
+   miscs = misc.objects.filter(created_date__lte=timezone.now())
+   return render(request, 'portfolio/misc_list.html', {'miscs': miscs})
 
 @login_required
-def stock_new(request):
+def misc_new(request):
    if request.method == "POST":
-       form = StockForm(request.POST)
+       form = MiscForm(request.POST)
        if form.is_valid():
-           stock = form.save(commit=False)
-           stock.created_date = timezone.now()
-           stock.save()
-           stocks = Stock.objects.filter(purchase_date__lte=timezone.now())
-           return render(request, 'portfolio/stock_list.html',
-                         {'stocks': stocks})
+           misc = form.save(commit=False)
+           misc.created_date = timezone.now()
+           misc.save()
+           misc = misc.objects.filter(created_date__lte=timezone.now())
+           return render(request, 'portfolio/misc_list.html',
+                         {'miscs': misc})
    else:
-       form = StockForm()
+       form = MiscForm()
        # print("Else")
-   return render(request, 'portfolio/stock_new.html', {'form': form})
+   return render(request, 'portfolio/misc_new.html', {'form': form})
 
 @login_required
-def stock_edit(request, pk):
-   stock = get_object_or_404(Stock, pk=pk)
+def misc_edit(request, pk):
+   misc = get_object_or_404(Misc, pk=pk)
    if request.method == "POST":
-       form = StockForm(request.POST, instance=stock)
+       form = MiscForm(request.POST, instance=misc)
        if form.is_valid():
-           stock = form.save()
-           # stock.customer = stock.id
-           stock.updated_date = timezone.now()
-           stock.save()
-           stocks = Stock.objects.filter(purchase_date__lte=timezone.now())
-           return render(request, 'portfolio/stock_list.html', {'stocks': stocks})
+           misc = form.save()
+           misc.updated_date = timezone.now()
+           misc.save()
+           misc = misc.objects.filter(date=timezone.now())
+           return render(request, 'portfolio/misc_list.html', {'misc': misc})
    else:
        # print("else")
-       form = StockForm(instance=stock)
-   return render(request, 'portfolio/stock_edit.html', {'form': form})
+       form = MiscForm(instance=misc)
+   return render(request, 'portfolio/misc_edit.html', {'form': form})
 
 @login_required
-def stock_delete(request, pk):
-   stock = get_object_or_404(Stock, pk=pk)
-   stock.delete()
-   return redirect('portfolio:stock_list')
+def misc_delete(request, pk):
+   misc = get_object_or_404(Misc, pk=pk)
+   misc.delete()
+   return redirect('portfolio:misc_list')
 
 @login_required
-def investment_list(request):
-    investment = Investment.objects.filter(acquired_date__lte=timezone.now())
-    return render(request, 'portfolio/investment_list.html',
-                 {'investments': investment})
+def asset_list(request):
+    asset = asset.objects.filter(created_date__lte=timezone.now())
+    return render(request, 'portfolio/asset_list.html',
+                 {'assets': asset})
 
 @login_required
-def investment_new(request):
+def asset_new(request):
    if request.method == "POST":
-       form = InvestmentForm(request.POST)
+       form = assetForm(request.POST)
        if form.is_valid():
-           investment = form.save(commit=False)
-           investment.created_date = timezone.now()
-           investment.save()
-           investment = Investment.objects.filter(acquired_date__lte=timezone.now())
-           return render(request, 'portfolio/investment_list.html',
-                         {'investments': investment})
+           asset = form.save(commit=False)
+           asset.created_date = timezone.now()
+           asset.save()
+           asset = asset.objects.filter(created_date__lte=timezone.now())
+           return render(request, 'portfolio/asset_list.html',
+                         {'assets': asset})
    else:
-       form = InvestmentForm()
+       form = assetForm()
        # print("Else")
-   return render(request, 'portfolio/investment_new.html', {'form': form})
+   return render(request, 'portfolio/asset_new.html', {'form': form})
 
 @login_required
-def investment_edit(request, pk):
-   investment = get_object_or_404(Investment, pk=pk)
-   if request.method == "POST":
-       form = InvestmentForm(request.POST, instance=investment)
+def asset_edit(request, pk):
+    asset = get_object_or_404(asset, pk=pk)
+    if request.method == "POST":
+       form = assetForm(request.POST, instance=asset)
        if form.is_valid():
-           investment = form.save()
-           # investment.customer = investment.id
-           investment.updated_date = timezone.now()
-           investment.save()
-           investment = Investment.objects.filter(acquired_date__lte=timezone.now())
-           return render(request, 'portfolio/investment_list.html', {'investments': investment})
-   else:
+           asset = form.save()
+           asset.updated_date = timezone.now()
+           asset.save()
+           asset = asset.objects.filter(created_date__lte=timezone.now())
+           return render(request, 'portfolio/asset_list.html', {'assets': asset})
+    else:
        # print("else")
-       form = InvestmentForm(instance=investment)
-   return render(request, 'portfolio/investment_edit.html', {'form': form})
+       form = assetForm(instance=asset)
+    return render(request, 'portfolio/asset_edit.html', {'form': form})
 
 @login_required
-def investment_delete(request, pk):
-   investment = get_object_or_404(Investment, pk=pk)
-   investment.delete()
-   return redirect('portfolio:investment_list')
-
-@login_required
-def portfolio(request,pk):
-   customer = get_object_or_404(Customer, pk=pk)
-   customers = Customer.objects.filter(created_date__lte=timezone.now())
-   investments =Investment.objects.filter(customer=pk)
-   stocks = Stock.objects.filter(customer=pk)
-   sum_recent_value = Investment.objects.filter(customer=pk).aggregate(Sum('recent_value'))
-   sum_acquired_value = Investment.objects.filter(customer=pk).aggregate(Sum('acquired_value'))
-   #overall_investment_results = sum_recent_value-sum_acquired_value
-   # Initialize the value of the stocks
-   sum_current_stocks_value = 0
-   sum_of_initial_stock_value = 0
-
-   # Loop through each stock and add the value to the total
-   for stock in stocks:
-        sum_current_stocks_value += stock.current_stock_value()
-        sum_of_initial_stock_value += stock.initial_stock_value()
-
-   return render(request, 'portfolio/portfolio.html', {'customers': customers,
-                                                       'investments': investments,
-                                                       'stocks': stocks,
-                                                       'sum_acquired_value': sum_acquired_value,
-                                                       'sum_recent_value': sum_recent_value,
-                                                       'sum_current_stocks_value': sum_current_stocks_value,
-                                                       'sum_of_initial_stock_value': sum_of_initial_stock_value,})
+def asset_delete(request, pk):
+   asset = get_object_or_404(asset, pk=pk)
+   asset.delete()
+   return redirect('portfolio:asset_list')
 
 class CustomerList(APIView):
 
